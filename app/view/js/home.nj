@@ -1,0 +1,122 @@
+<script>
+  
+  const dialog = document.querySelector('.modal-v-dialog')
+  const mask = document.querySelector('.modal-backdrop')
+  const message = document.querySelector('.modal-v-message')
+
+  function showDialog() {
+    dialog.style.display = 'block'
+    mask.style.display = 'block'
+    setTimeout(() => {
+      dialog.classList.add('show')
+      mask.classList.add('show')
+    }, 30)
+  }
+
+  function hideDialog() {
+    dialog.classList.remove('show')
+    mask.classList.remove('show')
+    setTimeout(() => {
+      dialog.style.display = 'none'
+      mask.style.display = 'none'
+    }, 300)
+  }
+
+  function showMessage(type, text) {
+    const inner = document.getElementById('modal-inner')
+    message.style.display = 'block'
+    inner.innerHTML = text
+    inner.className = 'alert alert-' + type
+    setTimeout(() => {
+      message.classList.add('show')
+    }, 50)
+    setTimeout(() => {
+      message.classList.remove('show')
+      setTimeout(() => {
+        message.style.display = 'none'
+      },300)
+    },3000)
+  }
+
+  function initFromData() {
+    document.getElementById('appName').value = ''
+    document.getElementById('appRemarks').value = ''
+  }
+
+  function renderApp(data) {
+    const rootEle= document.createElement('div')
+    rootEle.className = 'card app-card'
+    rootEle.dataset.appId = data.appId
+    rootEle.innerHTML = `
+            <div class="card-body">
+              <div class="card-inner mb-4">
+                <h5 class="card-title hide-txt">${data.appName}</h5>
+                <h6 class="card-subtitle mb-2 text-muted">${data.createDate}</h6>
+                ${ 
+                  data.remarks === ''
+                    ? '<p class="card-text hide-txt">没有备注说明</p>' 
+                    : '<p class="card-text hide-txt">' + data.remarks + '</p>'
+                }
+              </div>
+              <a href="/app/${ data.appId }" class="card-link">
+                <button type="button" class="btn btn-primary">详情</button>
+              </a>
+            </div>
+    `
+    return rootEle
+  }
+
+  document.getElementById('openBtn').addEventListener('click', showDialog)
+
+  document.getElementById('createAppBtn').addEventListener('click', ()=>{
+    const appName = document.getElementById('appName').value
+    const appRemarks = document.getElementById('appRemarks').value
+
+    if (!appName) return;
+    fetch('/u/app', {
+      method: 'post',
+      body: JSON.stringify({ 
+        appname: appName,
+        remarks: appRemarks
+      }),
+      headers: { 'content-type': 'application/json' },
+      cache: 'no-cache'
+    }).then(res => res.json()).then((res) => {
+      if (res.code === 0) {
+        const newAppCreator = renderApp(res.data)
+        
+        document.querySelector('.card-list').appendChild(newAppCreator)
+        showMessage('success', '添加成功!')
+        hideDialog()
+        initFromData()
+      } else {
+        showMessage('danger', res.message)
+      }
+    }).catch(e => {
+       console.log(e)
+       showMessage('danger', e)
+    })
+  })
+
+
+  {# function deleteApp(appId) {
+    fetch('/app/' + appId, {
+      method: 'delete',
+      headers: { 'content-type': 'application/json' },
+      cache: 'no-cache'
+    }).then(res => res.json()).then((res) => {
+      if (res.code === 0) {
+        showMessage('success', '删除成功')
+        const eleView = document.querySelector('div[data-app-id="' + appId + '"]')
+        if (eleView) {
+          document.querySelector('.card-list').removeChild(eleView)
+        }
+      } else {
+        showMessage('danger', res.message)
+      }
+    }).catch(e => {
+       console.log(e)
+       showMessage('danger', e)
+    })
+  } #}
+</script>

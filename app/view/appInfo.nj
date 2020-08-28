@@ -1,0 +1,81 @@
+{% extends "./base.nj" %}
+{% block style %}
+.uid-list a{
+  margin-right: 6px
+}
+.item-title {
+  width: 100px;
+  padding-right:12px;
+  text-align: right;
+  display: inline-block
+}
+.action {
+  position: absolute;
+  right: 34px;
+  top: 76px;
+}
+{% endblock %}
+{% block title %}
+  NODE-日志平台-{{appName}}
+{% endblock %}
+{% block body %}
+  <main class="container" style="padding: 80px 0">
+    <div class="jumbotron" style="position:relative">
+      <h1 class="display-4 font-weight-bold">{{appName}}</h1>
+      <h4 class="text-muted mb-4">{{remarks}}</h4>
+     
+      <hr class="my-4">
+      <p><span class="item-title">appKey:</span>{{appKey}}
+        <button onclick="copyAppkey()" class="btn-outline-primary btn btn-xs" style="padding: 0px 6px;margin-left: 12px;">复制</button>
+      </p>
+      <p><span class="item-title">创建人:</span>{{manager.username}}</p>
+      <p><span class="item-title">创建时间:</span>{{createDate}}</p>
+      {# <hr class="my-4"> #}
+      <p><span class="item-title">成员:</span>
+      {% if users.length === 0 %}
+        <span>暂无成员</span>
+      {% endif %}
+      {% for item in users %}
+        <span>{{item}}</span>
+      {% endfor %}
+        <a class="btn btn-dark" href="#" role="button">编辑成员(暂未开放)</a>
+      </p>
+      <div class="action">
+        <div class="custom-checkbox form-check form-check-inline">
+          <input type="checkbox" class="custom-control-input" id="customControlAutosizing">
+          <label class="custom-control-label" for="customControlAutosizing">开启抓包</label>
+        </div>
+        <button class="btn btn-danger del-btn btn-sm" onclick="deleteApp()">删除应用</button>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-body">
+        <h4 class="card-title mb-3">测试帐号：</h4>
+        <h6 class="card-subtitle text-muted">测试帐号及数据会在每天凌晨清除</h6>
+        <hr class="my-4">
+        <div class="mb-4 uid-list" id="uid-list">
+        {% for uid in tests %}
+          <a class="btn btn-outline-primary" data-uid="{{uid}}" href="/app/{{appId}}/{{uid}}">{{uid}}</a>
+        {% endfor %}
+        </div>
+        <div class="mt-2">
+          <p style="line-height:40px">添加测试帐号</p>
+          <div class="alert alert-danger" style="display:none" id="message" role="alert">
+            添加失败
+          </div>
+          <div class="form-group row">
+            <div class="col-10">
+              <input type="text" class="form-control" id="uid" name="uid">
+            </div>
+            <button class="btn btn-primary col-2" style="height: 40px" onclick="addTestUid()">添加</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+{% include "components/message.nj" %}
+{% include "components/dialog.nj" %}
+{% include "js/appInfoJs.nj" %}
+{% endblock %}
+

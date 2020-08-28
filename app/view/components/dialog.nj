@@ -1,0 +1,82 @@
+  <div class="modal fade" id="modal-v-dialog" tabindex="-1" role="dialog">  
+    <div class="modal-dialog" style="margin-top: 60px">
+      <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="v-dialog-title">提示</h5>
+            <button type="button" class="close" onclick="v_hideDialog()" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+          <div class="modal-body">
+            <div class="input-group mb-3 mt-3">
+              <div class="input-group-prepend">
+                <span class="input-group-text" style="width: 90px" id="v-dialog-label">应用名称</span>
+              </div>
+              <input id="v-dialog-input" type="text" aria-label="App Name" class="form-control">
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" onclick="v_hideDialog()">取消</button>
+            <button type="button" class="btn btn-primary" onclick="v_submitDialog()">确认</button>
+          </div>
+        </div>
+    </div>
+  </div>
+  <div class="modal-backdrop fade" id="v-dialog-mask" style="display: none"></div>
+  <script>
+  let __onSuccessCallback = () => {}
+  let __onClosedCallback = () => {}
+
+  function v_hideDialog() {
+    const dialog = document.getElementById('modal-v-dialog')
+    const mask = document.getElementById('v-dialog-mask')
+    dialog.classList.remove('show')
+    mask.classList.remove('show')
+    setTimeout(() => {
+      dialog.style.display = 'none'
+      mask.style.display = 'none'
+      __onClosedCallback()
+    }, 300)
+  }
+
+  function v_showDialog() {
+    const dialog = document.getElementById('modal-v-dialog')
+    const mask = document.getElementById('v-dialog-mask')
+    dialog.style.display = 'block'
+    mask.style.display = 'block'
+    setTimeout(() => {
+      dialog.classList.add('show')
+      mask.classList.add('show')
+    }, 30)
+  }
+
+  function v_submitDialog() {
+    const value = document.getElementById('v-dialog-input').value
+    __onSuccessCallback(value, v_hideDialog)
+  }
+
+  function dialog(config, onsuccess, onclosed) {
+    const { title, label } = config
+    if (title && typeof title === 'string') {
+      document.getElementById('v-dialog-title').innerHTML = title.toString()
+    }
+
+    if (label && typeof label === 'string') {
+      document.getElementById('v-dialog-label').innerHTML = label.toString()
+    }
+
+    if (onsuccess && typeof onsuccess === 'function') {
+      __onSuccessCallback = onsuccess
+    }
+
+    if (onclosed && typeof onclosed === 'function') {
+      __onClosedCallback = onclosed
+    }
+
+    document.getElementById('v-dialog-input').value = ''
+
+    v_showDialog()
+  }
+
+
+  </script>

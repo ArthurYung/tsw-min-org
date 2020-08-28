@@ -1,0 +1,330 @@
+<script>
+(function (sourceData) {
+  const rowNodes = document.querySelectorAll('tr[data-sn]') || [];
+  let currentSN = -1;
+  let reqViewType = 'Headers';
+  let resViewType = 'Headers';
+  let active = false
+
+  const toUpChartName = str => str.split('-').map(name => name.charAt(0).toUpperCase() + name.slice(1)).join('-')
+  const formatDate = (d) => new Date(d).toLocaleString()
+  const countTimes = (e, s) => ((new Date(e).getTime() - new Date(s).getTime()) + 'ms')
+  const httpMethod = (headers = '') => headers.match(/^[^\s]+/)?.[0]
+  const httpVersion = (headers = '') => {
+    const httpContext = headers.split('\n')[0]
+    if (!httpContext) return ''
+    const matched = httpContext.match(/HTTP(S?)\/([\d\.]+)/)
+    return matched ? matched[2] : ''
+  }
+
+  const checkResType = (type = '') => {
+    if (type.indexOf('javascript') != -1) {
+      return 'JS';
+    }
+    if (type.indexOf('css') != -1) {
+      return 'CSS';
+    }
+    if (type.indexOf('html') != -1) {
+      return 'HTML';
+    }
+    if (type.indexOf('json') != -1) {
+      return 'JSON';
+    }
+    if (type.indexOf('xml') != -1) {
+      return 'XML';
+    }
+    if (type.indexOf('text/') != -1) {
+      return 'TEXT';
+    }
+    if (type.indexOf('image/') != -1) {
+      return 'IMG';
+    }
+    return null
+  }
+
+  const renderList = (label, text) => (`<li>
+    <div class="li-row">
+      <div class="li-title">${label || ''}</div>
+      <div class="li-context">${text || ''}</div>
+    </div>
+  </li>`)
+
+  const parseStatusMessage = (responseHeader = '') => {
+    const httpContext = responseHeader.split('\n')[0]
+    if (!httpContext) {
+      return ''
+    }
+    const matched = httpContext.match(/^HTTP(S?)\/[\d\.]+ \d+ (.+)/)
+    return matched ? matched[2] : ''
+  }
+
+  function resetSelectTr() {
+    rowNodes.forEach(item => {
+      if (item.dataset.sn === currentSN) {
+        item.classList.add('bg-primary')
+        item.classList.add('text-white')
+        item.classList.remove('text-primary')
+      } else {
+        item.classList.remove('bg-primary')
+        item.classList.remove('text-white')
+        item.classList.add('text-primary')
+      }
+    })
+  }
+
+  function renderOverview() {
+    const data = sourceData[currentSN]
+    const headers = data.requestHeader.split('')
+    const renderData = {}
+    renderData.url = data.protocol.toLocaleLowerCase() + '://' +  data.host + data.path
+    renderData.code = data.statusCode
+    renderData.cip = data.clientIp
+    renderData.sip = data.serverIp
+    renderData.rlength = data.requestBody.length + data.requestHeader.length
+    renderData.clength = data.requestBody.length
+    renderData.stime = formatDate(data.timestamps.requestStart)
+    renderData.dns = (data.timestamps.dnsTime || 0) + 'ms'
+    renderData.header = countTimes(data.timestamps.onResponse, data.timestamps.requestStart)
+    renderData.sent = countTimes(data.timestamps.onSocket, data.timestamps.requestStart)
+    renderData.download = countTimes(data.timestamps.responseClose || data.timestamps.requestFinish, data.timestamps.requestStart)
+    renderData.message = parseStatusMessage(data.responseHeader) 
+    renderData.cport = data.clientPort
+    renderData.sport = data.serverPort
+    renderData.method = httpMethod(data.requestHeader)
+    renderData.version = httpVersion(data.requestHeader)
+    Object.keys(renderData).forEach(key => {
+      const node = document.getElementById('v-' + key)
+      if (node) {
+        node.innerHTML = renderData[key]
+      }
+    })
+  }
+
+  function renderHeadersView(node, headers = '') {
+    const html = headers.split('\n').map(context => {
+      const keyItem = context.split(':')
+      if (keyItem.length < 2) return ''
+      const [key, ...value] = keyItem
+      return renderList(toUpChartName(key), value.join(':'))
+    }).join('')
+    node.innerHTML = '<ul>' + html + '</ul>'
+  }
+
+  function renderWebFormsView(node, path = '') {
+    let html = '<div class="border-bottom bg-secondary text-white font-weight-bold" style="padding: 4px 8px">Query</div>'
+    const querys = path.split('?')[1]
+    if (querys) {
+      html += '<ul>' + querys.split('&').map(item => {
+        const [key, value] = item.split('=')
+        return renderList(key, value)
+      }).join('') + '</url>'
+    }
+    node.innerHTML = html
+  }
+
+  function renderBodyView(node, body) {
+    if (body) {
+      const bodyText = decodeURIComponent(escape(atob(body)))
+      node.innerHTML = bodyText.length > 500 ?  (bodyText.slice(0, 500) + '...') : bodyText
+    } else {
+      node.innerHTML = '<div class="d-flex justify-content-center align-items-center font-weight-bolder text-secondary" style="height: 100%">No request body data</div>'
+    }
+  }
+
+  function renderJSONView(node, body = '') {
+    if (body) {
+      try {
+        $(node).JSONView(JSON.parse(decodeURIComponent(escape(atob(body)))))
+      } catch(e) {
+        node.innerHTML = '<div class="d-flex justify-content-center align-items-center font-weight-bolder text-secondary" style="height: 100%">Is Unexpected token in JSON</div>'
+      }
+    } else {
+      node.innerHTML = ''
+    }
+  }
+
+  function renderCookiesView(node, headers = '') {
+    let html = ''
+    headers.split('\n').forEach(item => {
+      const [name, value] = item.split(':')
+      if (name.includes('cookie') || name.includes('Cookie')) {
+        html = value.split(';').map(item => {
+          const [key, ...val] = item.split('=')
+          return renderList(key, val.join('='))
+        }).join('')
+      }
+    })
+    node.innerHTML = html
+  }
+
+  function renderRequestView() {
+    const mountNode = document.getElementById('request-view')
+    const data = sourceData[currentSN]
+    switch(reqViewType) {
+      case 'Headers':
+        renderHeadersView(mountNode, data.requestHeader);
+        break;
+      case 'WebForms':
+        renderWebFormsView(mountNode, data.path);
+        break;
+      case 'Body':
+        renderBodyView(mountNode, data.requestBody);
+        break;
+      case 'JSONView':
+        renderJSONView(mountNode, data.requestBody);
+        break;
+      case 'Cookies':
+        renderCookiesView(mountNode, data.requestHeader);
+        break;
+      default:
+        break;
+    }
+  }
+
+  function renderPreviewView(node, data) {
+    let html = ''
+    if(data.responseType && data.responseBody) {
+      const previewType = checkResType(data.responseType)
+      console.log(previewType)
+      if (previewType === 'IMG') {
+        const src = 'data:' + data.responseType + ';base64,' + data.responseBody
+        html = `<div class="d-flex justify-content-center align-items-center">
+          <img src="${src}" style="max-width:100%"/>
+        </div>`
+      } else if (previewType === 'HTML') {
+        html = decodeURIComponent(escape(atob(data.responseBody)))
+        html = html.replace(/<style([\s\S]*?)<\/style>/g, '') // 避免样式侵入
+        html = html.replace(/<link ([\s\S]*?)>/g, '')
+        html = html.replace(/<script ([\s\S]*?)><\/script>/g, '')
+        console.log(html)
+      } else {
+        html = decodeURIComponent(escape(atob(data.responseBody)))
+      }
+    } 
+    node.innerHTML = html
+  }
+
+  function renderSetCookiesView(node, header = '') {
+    const columns = [
+      { key: 'name', title: 'Name' },
+      { key: 'value', title: 'Value' },
+      { key: 'domain', title: 'Domain' },
+      { key: 'path', title: 'Path' },
+      { key: 'expires', title: 'Expires' },
+      { key: 'max-age', title: 'Max-Age' },
+      { key: 'httponly', title: 'HttpOnly' },
+      { key: 'secure', title: 'Secure' },   
+    ]
+    const cookies = []
+    header.split('\n').forEach(item => {
+      const [name, ...context] = item.split(':')
+      if (name.includes('set-cookie') || name.includes('Set-Cookie')) {
+        const cookieItem = {}
+        context.join(':').split(';').forEach((item, index) => {
+          const [key, ...value] = item.split('=')
+          if (index === 0) {
+            cookieItem.name = key.trim()
+            cookieItem.value = value.join('=').trim()
+          } else {
+            cookieItem[key.trim().toLocaleLowerCase()] = value.join('=').trim()
+          }
+        })
+        cookies.push(cookieItem)
+      }
+    })
+    const headerHtml = '<thead><tr>' + columns.map(column => (`<th class="cookie-head" scope="col">${column.title}</th>`)).join('') + '</tr></thead>'
+    const bodyHtml = '<tbody>' + cookies.map(item => {
+      return '<tr>' + columns.map(({key}) => (`<td scope="row">${item[key] || ''}</td>`)).join('') + '</tr>'
+    }).join('') + '</tbody>'
+    node.innerHTML = '<table class="table border-bottom">' + headerHtml + bodyHtml + '</table>'
+  }
+
+  function renderResponseView() {
+    const mountNode = document.getElementById('response-view')
+    const data = sourceData[currentSN]
+    switch(resViewType) {
+      case 'Headers':
+        renderHeadersView(mountNode, data.responseHeader);
+        break;
+      case 'Preview':
+        renderPreviewView(mountNode, data);
+        break;
+      case 'Body':
+        renderBodyView(mountNode, data.responseBody);
+        break;
+      case 'JSONView':
+        renderJSONView(mountNode, data.responseBody);
+        break;
+      case 'Cookies':
+        renderSetCookiesView(mountNode, data.responseHeader);
+        break;
+      default:
+        break;
+    }
+  }
+
+  function renderResUrl() {
+    const data = sourceData[currentSN]
+    $('#i-url').text(data.protocol.toLocaleLowerCase() + '://' + data.host + data.path)
+  }
+
+  function bindEvents() {
+    rowNodes.forEach(node => {
+      node.addEventListener('click', ({target}) => {
+        if (target.tagName === 'TH') {
+          target = target.parentNode
+        }
+        currentSN = target.dataset.sn
+        resetSelectTr()
+
+        if (active) {
+          renderOverview();
+          renderResponseView();
+          renderRequestView();
+        }
+      })
+    })
+
+    $('.request-menu').on('click', ({ target }) => {
+        reqViewType = target.innerHTML
+        renderRequestView();
+
+        $('.request-context ul').find('.active').removeClass('active')
+        $(target).addClass('active')
+    })
+
+    $('.response-menu').on('click', ({ target }) => {
+      resViewType = target.innerHTML
+      renderResponseView();
+
+      $('.response-context ul').find('.active').removeClass('active')
+      $(target).addClass('active')
+    })
+
+    $('#overview').on('click', function() {
+      if (currentSN < 0) return
+      active = true
+      $('.overview-page').css('display', 'block')
+      $('.inspector-page').css('display', 'none')
+      renderOverview();
+      $('.menu-active').removeClass('menu-active')
+      $(this).addClass('menu-active')
+    })
+
+    $('#inspect').on('click', function() {
+      if (currentSN < 0) return
+      active = true
+      $('.overview-page').css('display', 'none')
+      $('.inspector-page').css('display', 'block')
+      renderResponseView();
+      renderRequestView();
+      renderResUrl();
+      $('.menu-active').removeClass('menu-active')
+      $(this).addClass('menu-active')
+    })
+  }
+
+  
+  bindEvents()
+})(requests)
+</script>

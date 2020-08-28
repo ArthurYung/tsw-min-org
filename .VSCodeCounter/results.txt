@@ -1,0 +1,81 @@
+Date : 2020-08-20 13:41:19
+Directory : /Users/ouyangyuchen/Documents/study/log-server
+Total : 33 files,  1194 codes, 79 comments, 226 blanks, all 1499 lines
+
+Languages
++------------+------------+------------+------------+------------+------------+
+| language   | files      | code       | comment    | blank      | total      |
++------------+------------+------------+------------+------------+------------+
+| TypeScript |         26 |      1,020 |         77 |        209 |      1,306 |
+| JSON       |          2 |         95 |          0 |          2 |         97 |
+| YAML       |          3 |         45 |          2 |         13 |         60 |
+| JavaScript |          1 |         27 |          0 |          2 |         29 |
+| Log        |          1 |          7 |          0 |          0 |          7 |
++------------+------------+------------+------------+------------+------------+
+
+Directories
++----------------------------------------------------------------------------------+------------+------------+------------+------------+------------+
+| path                                                                             | files      | code       | comment    | blank      | total      |
++----------------------------------------------------------------------------------+------------+------------+------------+------------+------------+
+| .                                                                                |         33 |      1,194 |         79 |        226 |      1,499 |
+| .github                                                                          |          1 |         23 |          2 |          7 |         32 |
+| .github/workflows                                                                |          1 |         23 |          2 |          7 |         32 |
+| app                                                                              |          8 |        266 |         31 |         54 |        351 |
+| app/controller                                                                   |          3 |        152 |          6 |         29 |        187 |
+| app/extend                                                                       |          1 |         19 |          0 |          2 |         21 |
+| app/service                                                                      |          3 |         80 |         25 |         20 |        125 |
+| config                                                                           |          4 |         43 |          5 |         15 |         63 |
+| db                                                                               |          4 |        519 |         22 |        105 |        646 |
+| mydb                                                                             |          1 |          7 |          0 |          0 |          7 |
+| test                                                                             |          3 |         58 |          8 |         14 |         80 |
+| test/app                                                                         |          2 |         13 |          8 |          6 |         27 |
+| test/app/controller                                                              |          1 |          0 |          8 |          2 |         10 |
+| test/app/service                                                                 |          1 |         13 |          0 |          4 |         17 |
+| test/db                                                                          |          1 |         45 |          0 |          8 |         53 |
+| typings                                                                          |          6 |         72 |         10 |         12 |         94 |
+| typings/app                                                                      |          3 |         29 |          6 |          8 |         43 |
+| typings/app/controller                                                           |          1 |         11 |          2 |          3 |         16 |
+| typings/app/service                                                              |          1 |         15 |          2 |          3 |         20 |
+| typings/config                                                                   |          2 |         40 |          4 |          2 |         46 |
+| utils                                                                            |          1 |         62 |          1 |          9 |         72 |
++----------------------------------------------------------------------------------+------------+------------+------------+------------+------------+
+
+Files
++----------------------------------------------------------------------------------+------------+------------+------------+------------+------------+
+| filename                                                                         | language   | code       | comment    | blank      | total      |
++----------------------------------------------------------------------------------+------------+------------+------------+------------+------------+
+| /Users/ouyangyuchen/Documents/study/log-server/.autod.conf.js                    | JavaScript |         27 |          0 |          2 |         29 |
+| /Users/ouyangyuchen/Documents/study/log-server/.github/workflows/nodejs.yml      | YAML       |         23 |          2 |          7 |         32 |
+| /Users/ouyangyuchen/Documents/study/log-server/.travis.yml                       | YAML       |         11 |          0 |          2 |         13 |
+| /Users/ouyangyuchen/Documents/study/log-server/app/controller/home.ts            | TypeScript |         58 |          2 |          9 |         69 |
+| /Users/ouyangyuchen/Documents/study/log-server/app/controller/report.ts          | TypeScript |         22 |          0 |          8 |         30 |
+| /Users/ouyangyuchen/Documents/study/log-server/app/controller/web.ts             | TypeScript |         72 |          4 |         12 |         88 |
+| /Users/ouyangyuchen/Documents/study/log-server/app/extend/filter.ts              | TypeScript |         19 |          0 |          2 |         21 |
+| /Users/ouyangyuchen/Documents/study/log-server/app/router.ts                     | TypeScript |         15 |          0 |          3 |         18 |
+| /Users/ouyangyuchen/Documents/study/log-server/app/service/App.ts                | TypeScript |         60 |         16 |         13 |         89 |
+| /Users/ouyangyuchen/Documents/study/log-server/app/service/Test.ts               | TypeScript |          6 |          7 |          3 |         16 |
+| /Users/ouyangyuchen/Documents/study/log-server/app/service/User.ts               | TypeScript |         14 |          2 |          4 |         20 |
+| /Users/ouyangyuchen/Documents/study/log-server/appveyor.yml                      | YAML       |         11 |          0 |          4 |         15 |
+| /Users/ouyangyuchen/Documents/study/log-server/config/config.default.ts          | TypeScript |         21 |          5 |          8 |         34 |
+| /Users/ouyangyuchen/Documents/study/log-server/config/config.local.ts            | TypeScript |          9 |          0 |          2 |         11 |
+| /Users/ouyangyuchen/Documents/study/log-server/config/config.prod.ts             | TypeScript |          5 |          0 |          2 |          7 |
+| /Users/ouyangyuchen/Documents/study/log-server/config/plugin.ts                  | TypeScript |          8 |          0 |          3 |         11 |
+| /Users/ouyangyuchen/Documents/study/log-server/db/data.ts                        | TypeScript |        112 |          3 |         26 |        141 |
+| /Users/ouyangyuchen/Documents/study/log-server/db/index.ts                       | TypeScript |        151 |         17 |         33 |        201 |
+| /Users/ouyangyuchen/Documents/study/log-server/db/level.ts                       | TypeScript |        107 |          2 |         20 |        129 |
+| /Users/ouyangyuchen/Documents/study/log-server/db/old.ts                         | TypeScript |        149 |          0 |         26 |        175 |
+| /Users/ouyangyuchen/Documents/study/log-server/mydb/000255.log                   | Log        |          7 |          0 |          0 |          7 |
+| /Users/ouyangyuchen/Documents/study/log-server/package.json                      | JSON       |         65 |          0 |          1 |         66 |
+| /Users/ouyangyuchen/Documents/study/log-server/test/app/controller/home.test.ts  | TypeScript |          0 |          8 |          2 |         10 |
+| /Users/ouyangyuchen/Documents/study/log-server/test/app/service/Test.test.ts     | TypeScript |         13 |          0 |          4 |         17 |
+| /Users/ouyangyuchen/Documents/study/log-server/test/db/db.test.ts                | TypeScript |         45 |          0 |          8 |         53 |
+| /Users/ouyangyuchen/Documents/study/log-server/tsconfig.json                     | JSON       |         30 |          0 |          1 |         31 |
+| /Users/ouyangyuchen/Documents/study/log-server/typings/app/controller/index.d.ts | TypeScript |         11 |          2 |          3 |         16 |
+| /Users/ouyangyuchen/Documents/study/log-server/typings/app/index.d.ts            | TypeScript |          3 |          2 |          2 |          7 |
+| /Users/ouyangyuchen/Documents/study/log-server/typings/app/service/index.d.ts    | TypeScript |         15 |          2 |          3 |         20 |
+| /Users/ouyangyuchen/Documents/study/log-server/typings/config/index.d.ts         | TypeScript |          8 |          2 |          1 |         11 |
+| /Users/ouyangyuchen/Documents/study/log-server/typings/config/plugin.d.ts        | TypeScript |         32 |          2 |          1 |         35 |
+| /Users/ouyangyuchen/Documents/study/log-server/typings/index.d.ts                | TypeScript |          3 |          0 |          2 |          5 |
+| /Users/ouyangyuchen/Documents/study/log-server/utils/util.ts                     | TypeScript |         62 |          1 |          9 |         72 |
+| Total                                                                            |            |      1,194 |         79 |        226 |      1,499 |
++----------------------------------------------------------------------------------+------------+------------+------------+------------+------------+

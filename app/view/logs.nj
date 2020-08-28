@@ -1,0 +1,53 @@
+{% extends "./base.nj" %}
+{% block body %}
+<header class="navbar navbar-secondary bg-secondary text-white">
+全息日志
+</header>
+  <main class="bg-secondary" style="min-height:calc(100vh - 40px)">
+    <div class="pb-1 pr-3 pl-3 pt-2">
+      <div class="jumbotron bg-dark pt-4 pb-4 pl-4 pr-4">
+      {% for logInfo in logs %}
+
+        <div class="jumbotron bg-dark pt-1 pb-1 pl-2 pr-2 mb-3 border border-secondary" style="font-size: 14px">
+          <p style="font-size:12px" class="pt-1 pb-1 ">
+            <span data-time="{{logInfo.timestamp}}" class="text-white-50 mr-1"></span>
+            <a target="_blank" href="{{'/home/capture/' + logInfo.rid }}" class="text-primary">[在线查看]</a>
+            <span class="text-white-50">{{logInfo | getBaseUrl}}</span>
+          </p>
+          {% for log in logInfo.logs %}
+            <div class="text-white-50">
+              {{log | transfer | safe}}
+            </div>
+          {% endfor %}
+        </div>
+      {% endfor %}
+
+      </div>
+    </div>
+  </main>
+{% endblock %}
+{% block script %}
+function timestampRender(node) {
+  const timestamp = node.dataset.time || Date.now()
+  const timeRanges = [{ r: 3600 * 24, n: '天'}, { r: 3600, n: '小时'}, { r: 60, n:'分'}, { r:1, n:'秒' }]
+  let countTime = ~~((Date.now() - timestamp)/1000)
+  let c
+  const timerText = timeRanges.reduce((res, curr) => {
+    if ((c = ~~(countTime / curr.r))) {
+      countTime = countTime % curr.r
+      return res + c + curr.n 
+    }
+    return res
+  }, '') + '前'
+  node.innerHTML = timerText
+}
+
+function intervalCallback() {
+  document.querySelectorAll('span[data-time]').forEach(node => {
+    timestampRender(node)
+  })
+}
+
+setInterval(intervalCallback, 1000)
+intervalCallback()
+{% endblock %}

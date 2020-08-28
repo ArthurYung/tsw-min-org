@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="zh-Hans" class="zh">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width,initial-scale=1.0">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.0/dist/css/bootstrap.min.css" integrity="sha384-9aIt2nRpC12Uk9gS9baDl411NQApFmC26EwAOH8WgZl5MYYxFfc+NcPb1dKGj7Sk" crossorigin="anonymous">
+  {% block header %}
+  {% endblock %}
+  <style>
+  {% block style %}
+  {% endblock %}
+  </style>
+  <title>
+  {% block title %}
+    NODE-日志平台
+  {% endblock %}
+  </title>
+  <style>
+    .modal {
+      height: auto
+    }
+  </style>
+</head>
+
+<body>
+  {% block body %}
+  {% endblock %}
+  <script>
+  {% block script %}
+  {% endblock %}
+  </script>
+</body>
+
+</html>

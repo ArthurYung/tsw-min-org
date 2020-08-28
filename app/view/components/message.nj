@@ -1,0 +1,28 @@
+  <div class="modal fade" id="modal-v-message" tabindex="-1" role="dialog">  
+    <div class="modal-dialog" style="margin-top: 60px">
+      <div class="alert alert-success" id="modal-inner" role="alert">
+        应用创建成功！
+      </div>
+    </div>
+  </div>
+  <script>
+    let __messageTimeout
+    function message(type, text) {
+      const inner = document.getElementById('modal-inner')
+      const target = document.getElementById("modal-v-message")
+      target.style.display = 'block'
+      inner.innerHTML = text
+      inner.className = 'alert alert-' + type
+      clearTimeout(__messageTimeout)
+      setTimeout(() => {
+        target.classList.add('show')
+      }, 50)
+
+      __messageTimeout = setTimeout(() => {
+        target.classList.remove('show')
+        setTimeout(() => {
+          target.style.display = 'none'
+        },300)
+      },3000)
+    }
+  </script>

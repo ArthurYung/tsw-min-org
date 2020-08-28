@@ -1,0 +1,120 @@
+<script>
+function appendUidNode(uid) {
+  const parentNode = document.getElementById('uid-list')
+  let node = document.querySelector('a[data-uid=' + uid + ']')
+  if (!node) {
+    node = document.createElement('a')
+    node.className = "btn btn-outline-primary"
+    node.setAttribute('data-uid', uid)
+    node.href = `/app/{{appId}}/${uid}`
+    node.innerHTML = uid
+  }
+  parentNode.appendChild(node)
+}
+
+function addTestUid() {
+  const targetInput = document.getElementById("uid")
+  const uid = targetInput.value.trim()
+  if (uid) {
+    fetch('/u/uid', {
+      body: JSON.stringify({
+        appKey: "{{appKey}}",
+        uid,
+      }),
+      method: 'PUT',
+      headers: {
+        'content-type': 'application/json'
+      },
+    }).then(res => res.json()).then((res) => {
+      console.log(res)
+      if (res.code === 0) {
+        appendUidNode(uid)
+        targetInput.value = ''
+      } else {
+        message('danger', res.message)
+      }
+    }).catch(err => {
+      message('danger', err.message)
+    })
+  }
+}
+
+function deleteApp() {
+    dialog({
+      title: '请输入appKey确认删除',
+      label: 'appKey'
+    }, (value, callback) => {
+
+      if (value === "{{appKey}}") {
+
+        fetch('/app/{{appId}}', {
+          method: 'DELETE',
+          body: JSON.stringify({
+            uid: "{{manager.uid}}",
+          }),
+          headers: {
+            'content-type': 'application/json'
+          },
+        }).then(res => res.json()).then((res) => {
+          if (res.code === 0) {
+            callback()
+            message('success', 'app删除成功')
+            setTimeout(() => {
+              location.href = '/home'
+            },2000)
+          } else {
+            message('danger', res.message)
+          }
+        }).catch(err => {
+          message('danger', err.message)
+        })
+
+      } else {
+        callback()
+        message('danger', 'appKey错误')
+      }
+    })
+}
+
+function copyAppkey() {
+  try {
+    const input = document.createElement('input');
+    input.style.cssText = 'position:fixed;z-index:-1;opacity:0';
+    document.body.appendChild(input);
+    input.setAttribute('value', "{{appKey}}");
+    input.select();
+    document.execCommand('copy');
+    document.body.removeChild(input);
+    message('success', '复制成功')
+  } catch (e) {
+    message('danger', '复制失败, ' + e.message)
+  }
+}
+
+const targetInput = document.querySelector('#customControlAutosizing')
+targetInput.addEventListener('change', () => {
+  console.log('change')
+  const isEnabled = targetInput.checked
+    fetch('/app/{{appId}}/enabled', {
+          method: 'PUT',
+          body: JSON.stringify({
+            enabled: isEnabled,
+          }),
+          headers: {
+            'content-type': 'application/json'
+          },
+        }).then(res => res.json()).then((res) => {
+          if (res.code === 0) {
+            message('success', isEnabled ? '已开启抓包': '已关闭抓包')
+          } else {
+            message('danger', res.message)
+          }
+        }).catch(err => {
+          message('danger', err.message)
+        })
+})
+
+if ({{enabled}}) {
+  targetInput.checked = true
+}
+</script>
